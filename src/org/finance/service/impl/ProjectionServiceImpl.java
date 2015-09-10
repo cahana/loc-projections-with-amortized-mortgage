@@ -24,6 +24,7 @@ import org.finance.util.Type;
 public class ProjectionServiceImpl implements ProjectionService {
 
 	private static final String CSV_DELIMITER = ",";
+	private static final String INTEREST_PMT = "heloc interest";
 	
 	@Override
 	public void performHelocProjection(List<Double> interestRates, Double balance, int startingMonth, int startingYear, File basic, File mooIncome, File outputFile) 
@@ -94,6 +95,7 @@ public class ProjectionServiceImpl implements ProjectionService {
 					
 		// take the final list and calculate the numbers
 		Double previousRunningAccruedInterest = 0D;
+		Double monthlyAccruedInterest = 0D;
 		int daysBetween = 0;
 		LineItem currentItem = null;
 		LineItem nextItem = null;
@@ -102,7 +104,14 @@ public class ProjectionServiceImpl implements ProjectionService {
 			
 			// find out balance
 			if (currentItem.getType() == Type.Expense) {
-				currentItem.setBalance(FinancialCalculations.add(balance, currentItem.getAmount()));
+				// track monthly accrued interest
+				if (StringUtils.equalsIgnoreCase(currentItem.getDescription(), INTEREST_PMT)) {
+					currentItem.setBalance(FinancialCalculations.add(balance, monthlyAccruedInterest));
+					monthlyAccruedInterest = 0D;
+				}
+				else {
+					currentItem.setBalance(FinancialCalculations.add(balance, currentItem.getAmount()));
+				}
 			}
 			else {
 				currentItem.setBalance(FinancialCalculations.subtract(balance, currentItem.getAmount()));
@@ -139,6 +148,9 @@ public class ProjectionServiceImpl implements ProjectionService {
 			else {
 				currentItem.setRunningAccruedInterest(currentItem.getAccruedInterest()+previousRunningAccruedInterest);
 			}
+			
+			// track monthly accrued interest
+			monthlyAccruedInterest += currentItem.getAccruedInterest();
 			
 			// need this to keep a running total of the interest total
 			previousRunningAccruedInterest = currentItem.getRunningAccruedInterest();
