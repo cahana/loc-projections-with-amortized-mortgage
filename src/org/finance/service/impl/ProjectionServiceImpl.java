@@ -49,15 +49,6 @@ public class ProjectionServiceImpl implements ProjectionService {
         }
 		br.close();
 		
-		// print out the results
-//		for (BasicItem basicItem : basicList) {
-//			System.out.println(basicItem.toString());
-//		}
-//		
-//		for (LineItem lineItem : mooIncomeList) {
-//			System.out.println(lineItem.toString());
-//		}
-		
 		List<LineItem> items = new ArrayList<LineItem>();
 		// what's the outter loop conditional?? balance? or 20 years?
 		int control = startingYear + 21;
@@ -125,9 +116,6 @@ public class ProjectionServiceImpl implements ProjectionService {
 			else {
 				nextItem = null;
 			}
-			
-			
-			
 			
 			// last item in array
 			if (nextItem == null) {
