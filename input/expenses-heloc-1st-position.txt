@@ -1,0 +1,7 @@
+1,A+,Expense,135
+3,water/sewer,Expense,120
+5,paycheck,Income,2493
+9,credit card,Expense,4000
+15,EA Buck,Expense,250
+20,paycheck,Income,2493
+25,Electricity,Expense,130
