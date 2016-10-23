@@ -25,7 +25,7 @@ Input
 * Location of Output file
 
 ```
-1,2,3.75 75000 11 2016 /projections/input/expenses.txt /projections/input/income.txt "/projections/results/results.csv"
+1,2,3.75 75000 11 2016 /projections/input/expenses.txt /projections/input/income.txt /projections/results/results.csv
 ```
 
 Output is a csv file
