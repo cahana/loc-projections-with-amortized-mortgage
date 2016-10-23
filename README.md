@@ -29,6 +29,13 @@ Input
 ```
 
 Output is a csv file
+* Date
+* Description
+* Type (Expense or Income)
+* Amount of Expense/Income
+* Balance of Line of Credit
+* Accrued Interest (up to that day)
+* Running Interest Total
 
 ## Versioning
 
