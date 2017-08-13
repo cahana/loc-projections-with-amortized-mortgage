@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.finance.domain.BasicItem;
 import org.finance.domain.LineItem;
 import org.finance.service.ProjectionService;
@@ -27,7 +29,7 @@ public class ProjectionServiceImpl implements ProjectionService {
 	private static final String INTEREST_PMT = "heloc interest";
 	
 	@Override
-	public void performHelocProjection(List<Double> interestRates, Double balance, int startingMonth, int startingYear, File basic, File mooIncome, File outputFile) 
+	public void performHelocProjection(List<Double> interestRates, Double balance, int startingMonth, int startingYear, int projectionLength, File basic, File mooIncome, File outputFile) 
 	throws Exception {
 		System.out.println("crunching numbers");
 		
@@ -41,32 +43,23 @@ public class ProjectionServiceImpl implements ProjectionService {
         }
 		br.close();
 		
-		// read in marcie's income dates
+		// read in marcie's income dates which will contain 1 line, the starting pay date and the amount
+		// pull out the record from the moo's income file
 		List<LineItem> mooIncomeList = new ArrayList<LineItem>();
 		br = new BufferedReader(new FileReader(mooIncome));
 		while ((record = br.readLine()) != null) {
             record = StringUtils.trim(record);
-            mooIncomeList.add(buildMooIncomeLineItem(record));
+            mooIncomeList.add(buildBiWeeklyIncomeLineItem(record));
         }
 		br.close();
 		
-		List<LineItem> items = new ArrayList<LineItem>();
-		// what's the outter loop conditional?? balance? or 20 years?
-		int control = startingYear + 21;
-		int tempStartingYear = startingYear;
-		int tempStartingMonth = startingMonth;
-		while (tempStartingYear < control) {
-			// loop through the months beginning with the starting month
-			for (int i = tempStartingMonth-1; i < 12; i++) {
-				// loop through the basicItems and create LineItems
-				for (BasicItem basicItem : basicList) {
-					items.add(buildLineItem(basicItem, i+1, tempStartingYear));
-				}
-			}
-			// reset month to January and increment the year
-			tempStartingMonth = 1;
-			tempStartingYear++;
+		// use the projectionLength to calculate out Marcie's pay dates for that length of time
+		if (!mooIncomeList.isEmpty()) {
+			mooIncomeList = buildBiWeeklyIncomeList(mooIncomeList.get(0), projectionLength);
 		}
+		
+		
+		List<LineItem> items = buildMonthlyList(basicList, startingMonth, startingYear, projectionLength);
 		
 //		for (LineItem lineItem : items) {
 //			System.out.println(lineItem.toString());
@@ -194,13 +187,24 @@ public class ProjectionServiceImpl implements ProjectionService {
 		
 	}
 
-	private LineItem buildMooIncomeLineItem(String record) {
+	private LineItem buildBiWeeklyIncomeLineItem(String record) {
 		LineItem item = new LineItem();
 		StringTokenizer st = new StringTokenizer(record, ",");
 		item.setDate(Formatter.convertStringToDate(st.nextToken()));
 		item.setDescription("paycheck");
 		item.setType(Type.Income);
 		item.setAmount(new Double(st.nextToken()));
+		
+		return item;
+		
+	}
+	
+	private LineItem buildBiWeeklyIncomeLineItem(Date date, double pay) {
+		LineItem item = new LineItem();
+		item.setDate(date);
+		item.setDescription("paycheck");
+		item.setType(Type.Income);
+		item.setAmount(pay);
 		
 		return item;
 		
@@ -216,5 +220,52 @@ public class ProjectionServiceImpl implements ProjectionService {
 		
 		return item;
 		
+	}
+	
+	private List<LineItem> buildBiWeeklyIncomeList(LineItem startingLineItem, int projectionLength) {
+		List<LineItem> list = new ArrayList<LineItem>();
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(startingLineItem.getDate());
+		
+		// January = 0
+		int month = c.get(Calendar.MONTH);
+		int year = c.get(Calendar.YEAR);
+		int endingMonth = month == 11 ? 0 : month + 1;
+		int endingYear = year + projectionLength;
+		
+		Calendar endingCal = Calendar.getInstance();
+		endingCal.set(endingYear, endingMonth, 1);
+		
+		do {
+			list.add(buildBiWeeklyIncomeLineItem(c.getTime(), startingLineItem.getAmount()));
+			c.setTime(DateUtils.addDays(c.getTime(), 14));
+		}
+		while (c.before(endingCal));
+				
+		return list;
+	}
+	
+	private List<LineItem> buildMonthlyList(List<BasicItem> basicList, int startingMonth, int startingYear, int projectionLength) {
+		List<LineItem> list = new ArrayList<LineItem>();
+		
+		Calendar startingCal = Calendar.getInstance();
+		startingCal.set(startingYear, startingMonth - 1, 1);
+		
+		Calendar endingCal = Calendar.getInstance();
+		endingCal.set(startingYear+projectionLength, startingMonth == 12 ? 0 : startingMonth, 1);
+		
+		do {
+			// loop through the basicItems and create LineItems
+			for (BasicItem basicItem : basicList) {
+				list.add(buildLineItem(basicItem, startingCal.get(Calendar.MONTH)+1, startingCal.get(Calendar.YEAR)));
+			}
+			
+			// increment to the next month
+			startingCal.setTime(DateUtils.addMonths(startingCal.getTime(), 1));
+		}
+		while (startingCal.before(endingCal));
+				
+		return list;
 	}
 }

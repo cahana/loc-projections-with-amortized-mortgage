@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ProjectionService {
 
-	public void performHelocProjection(List<Double> interestRates, Double balance, int startingMonth, int startingYear, File basic, File mooIncome, File outputFile)
+	public void performHelocProjection(List<Double> interestRates, Double balance, int startingMonth, int startingYear, int projectionLength, File basic, File mooIncome, File outputFile)
 	throws Exception;
 	
 }

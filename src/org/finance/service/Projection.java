@@ -12,15 +12,16 @@ public class Projection {
 	public static void main(String[] args) {
 		// args 1. interest array 2. balance 3. starting month
 		//check args
-		if (args.length != 7) {
+		if (args.length != 8) {
 			System.out.println("Required args are: ");
 			System.out.println("1. comma delimited interest rates");
 			System.out.println("2. balance (no commas)");
 			System.out.println("3. starting month (January is 1)");
 			System.out.println("4. starting year");
-			System.out.println("5. file location of monthly items");
-			System.out.println("6. file location of marcie's pay dates");
-			System.out.println("7. file location of projection output");
+			System.out.println("5. how long to project out (in years)");
+			System.out.println("6. file location of monthly items");
+			System.out.println("7. file location of every other Friday pay dates");
+			System.out.println("8. file location of projection output (use .csv extension)");
 			System.exit(1);
 		}
 		
@@ -37,21 +38,24 @@ public class Projection {
 		//3. starting month
 		int month = new Integer(args[2]).intValue();
 		
-		//4. starting month
+		//4. starting year
 		int year = new Integer(args[3]).intValue();
 		
-		//5. file location of monthly items
-		File basicFile = new File(args[4]);
+		//5. how long to project out (in years)
+		int projectionLength = new Integer(args[4]).intValue();
 		
-		//6. file location of marcie's pay dates
-		File mooIncomeFile = new File(args[5]);
+		//6. file location of monthly income/expenses
+		File basicFile = new File(args[5]);
 		
-		//6. file location of marcie's pay dates
-		File outputFile = new File(args[6]);
+		//7. file location of every other Friday pay dates
+		File mooIncomeFile = new File(args[6]);
+		
+		//8. file location of projection output (use .csv extension)
+		File outputFile = new File(args[7]);
 		
 		ProjectionService ps = new ProjectionServiceImpl();
 		try {
-		ps.performHelocProjection(interestRates, balance, month, year, basicFile, mooIncomeFile, outputFile);
+			ps.performHelocProjection(interestRates, balance, month, year, projectionLength, basicFile, mooIncomeFile, outputFile);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
