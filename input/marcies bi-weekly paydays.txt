@@ -1,0 +1,2 @@
+put 2 dates in an excel file A1 and A2, highlight both and drag down as far as you want to go
+https://www.mrexcel.com/forum/excel-questions/504221-formula-return-date-every-other-friday.html
