@@ -1,8 +1,9 @@
-1,mortgage,Expense,2597
-5,paycheck,Income,2823
-5,heloc interest,Expense,0
-9,credit card,Expense,5000
+1,mortgage,Expense,2594
+5,paycheck,Income,2768
+9,credit card,Expense,4500
+12,Costco,Expense,200
 15,EA Buck,Expense,250
 17,Electricity,Expense,50
-20,paycheck,Income,2823
+19,heloc interest,Expense,0
+20,paycheck,Income,2768
 22,EA Buck,Expense,350

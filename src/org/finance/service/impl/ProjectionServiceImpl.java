@@ -156,11 +156,24 @@ public class ProjectionServiceImpl implements ProjectionService {
 		
 		// print out "partial" line item results to a file
 		PrintWriter pw = new PrintWriter(outputFile);
+		pw.println(printHeaderRow());
 		for (LineItem lineItem : finalList) {
 			//pw.println(lineItem.toString());
 			pw.println(convertToCsv(lineItem));
 		}
 		pw.close();
+	}
+	
+	private String printHeaderRow() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Date").append(CSV_DELIMITER);
+		sb.append("Description").append(CSV_DELIMITER);
+		sb.append("Type").append(CSV_DELIMITER);
+		sb.append("Amount").append(CSV_DELIMITER);
+		sb.append("Outstanding Balance").append(CSV_DELIMITER);
+		sb.append("Daily Interest Owed").append(CSV_DELIMITER);
+		sb.append("Total Interest Paid to Date").append(CSV_DELIMITER);
+		return sb.toString();
 	}
 	
 	private String convertToCsv(LineItem lineItem) {
