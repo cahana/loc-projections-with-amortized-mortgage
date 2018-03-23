@@ -33,9 +33,9 @@ Output is a csv file
 * Description
 * Type (Expense or Income)
 * Amount of Expense/Income
-* Balance of Line of Credit
-* Accrued Interest (up to that day)
-* Running Interest Total
+* Balance on Line of Credit
+* Daily Interest Owed
+* Interest Paid to Date
 
 ## Versioning
 
