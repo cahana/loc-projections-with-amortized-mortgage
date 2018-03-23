@@ -172,7 +172,7 @@ public class ProjectionServiceImpl implements ProjectionService {
 		sb.append("Amount").append(CSV_DELIMITER);
 		sb.append("Outstanding Balance").append(CSV_DELIMITER);
 		sb.append("Daily Interest Owed").append(CSV_DELIMITER);
-		sb.append("Total Interest Paid to Date").append(CSV_DELIMITER);
+		sb.append("Total Interest Paid to Date");
 		return sb.toString();
 	}
 	
